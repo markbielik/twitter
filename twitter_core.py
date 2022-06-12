@@ -28,5 +28,6 @@ class Twitter(object):
     def find_hashtags(self, message):
         return re.findall("#(\w+)", message)
 
-    def delete_tweet(self):  # remember to upgrade this function
-        print('Delete tweet')
+    def delete_tweet(self):
+        if self.backend:
+            os.remove(self.backend)
