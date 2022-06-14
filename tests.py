@@ -1,6 +1,13 @@
+from unittest.mock import patch
+
 import pytest
 
 from twitter_core import Twitter
+
+
+class ResponseGetMock():
+    def json(self):
+        return {'avatar_url': 'test'}
 
 
 def test_twitter_startup(twitter_app):
@@ -8,8 +15,9 @@ def test_twitter_startup(twitter_app):
 
 
 def test_single_tweet(twitter_app):
-    twitter_app.single_tweet('Test message')
-    assert twitter_app.tweets_messages == ['Test message']
+    with patch.object(twitter_app, 'get_user_avatar', return_value='test'):
+        twitter_app.single_tweet('Test message')
+        assert twitter_app.tweets_messages == ['Test message']
 
 
 def test_length_single_tweet(twitter_app):
@@ -20,7 +28,6 @@ def test_length_single_tweet(twitter_app):
 
 def test_tweet_with_hashtag(twitter_app):
     message = "#Lorem ipsum"
-    twitter_app.single_tweet(message)
     assert 'Lorem' in twitter_app.find_hashtags(message)
 
 
@@ -43,3 +50,13 @@ def test_initialize_twitter_classes(backend_file):
     value1.single_tweet('Test 2')
 
     assert value2.tweets_messages == ['Test 1', 'Test 2']
+
+
+@patch.object(Twitter, 'get_user_avatar', return_value='test')
+def test_twitter_with_username(avatar_mock, twitter_app):
+    if not twitter_app.username:
+        pytest.skip()
+
+    twitter_app.single_tweet('Lorem ipsum')
+    assert twitter_app.tweets == [{'message': 'Lorem ipsum', 'avatar': 'test'}]
+    avatar_mock.assert_called()
