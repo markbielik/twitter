@@ -1,5 +1,6 @@
 import pytest
 
+from tests import ResponseGetMock
 from twitter_core import Twitter
 
 
@@ -10,13 +11,25 @@ def backend_file(tmpdir):
     return temp_file
 
 
-@pytest.fixture(params=['list', 'backend'],
-                name='twitter_app')
-def base(backend_file, request):
+@pytest.fixture(params=['list', 'backend'], name='twitter_app')
+def base(backend_file, request, username, monkeypatch):
     if request.param == 'list':
-        twitter_app = Twitter()
-        return twitter_app
+        twitter_app = Twitter(username=username)
     elif request.param == 'backend':
-        twitter_app = Twitter(backend=backend_file)
-        return twitter_app
+        twitter_app = Twitter(backend=backend_file, username=username)
+
+    def monkey_return(url):
+        return ResponseGetMock()
+
+    return twitter_app
+
+
+@pytest.fixture(params=[None, 'python'])
+def username(request):
+    return request.param
+
+
+@pytest.fixture(autouse=True)
+def no_requests(monkeypatch):
+    monkeypatch.delattr('requests.sessions.Session.request')
 
