@@ -33,3 +33,13 @@ def test_tweet_with_hashtag(twitter_app):
 ))
 def test_tweet_with_hashtag_v2(twitter_app, message, expected):
     assert twitter_app.find_hashtags(message) == expected
+
+
+def test_initialize_twitter_classes(backend_file):
+    value1 = Twitter(backend=backend_file)
+    value2 = Twitter(backend=backend_file)
+
+    value1.single_tweet('Test 1')
+    value1.single_tweet('Test 2')
+
+    assert value2.tweets == ['Test 1', 'Test 2']

@@ -6,15 +6,11 @@ class Twitter(object):
     def __init__(self, backend=None):
         self.backend = backend
         self._tweets = []
-        if self.backend and not os.path.exists(self.backend):
-            with open(self.backend, 'w'):
-                pass
 
     @property
     def tweets(self):
         if self.backend and not self._tweets:
-            with open(self.backend) as twitter_file:
-                self._tweets = [line.rstrip('\n') for line in twitter_file]
+            self._tweets = [line.rstrip('\n') for line in self.backend.readlines()]
         return self._tweets
 
     def single_tweet(self, message):
@@ -28,6 +24,6 @@ class Twitter(object):
     def find_hashtags(self, message):
         return re.findall("#(\w+)", message)
 
-    def delete_tweet(self):
-        if self.backend:
-            os.remove(self.backend)
+    # def delete_tweet(self):
+    #     if self.backend:
+    #         os.remove(self.backend)
