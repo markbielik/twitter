@@ -1,11 +1,11 @@
-from unittest.mock import patch
+from unittest.mock import patch, Mock, MagicMock
 
 import pytest
 
 from twitter_core import Twitter
 
 
-class ResponseGetMock():
+class ResponseGetMock(object):
     def json(self):
         return {'avatar_url': 'test'}
 
@@ -58,5 +58,24 @@ def test_twitter_with_username(avatar_mock, twitter_app):
         pytest.skip()
 
     twitter_app.single_tweet('Lorem ipsum')
-    assert twitter_app.tweets == [{'message': 'Lorem ipsum', 'avatar': 'test'}]
+    assert twitter_app.tweets == [{'message': 'Lorem ipsum',
+                                   'avatar': 'test',
+                                   'hashtags': []
+                                   }]
     avatar_mock.assert_called()
+
+
+@patch.object(Twitter, 'get_user_avatar', return_value='test')
+def test_tweet_with_hashtags_mock(avatar_mock, twitter_app):
+    twitter_app.find_hashtags = Mock()
+    twitter_app.find_hashtags.return_value = ['lorem']
+    twitter_app.single_tweet('Test #ipsum')
+    assert twitter_app.tweets[0]['hashtags'] == ['lorem']
+    twitter_app.find_hashtags.assert_called_with('Test #ipsum')
+
+
+def test_version_app(twitter_app):
+    twitter_app.ver = MagicMock()
+    twitter_app.ver.__eq__.return_value = '1.0'
+    assert twitter_app.ver == '1.0'
+
