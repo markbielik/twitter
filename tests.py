@@ -9,13 +9,13 @@ def test_twitter_startup(twitter_app):
 
 def test_single_tweet(twitter_app):
     twitter_app.single_tweet('Test message')
-    assert twitter_app.tweets == ['Test message']
+    assert twitter_app.tweets_messages == ['Test message']
 
 
 def test_length_single_tweet(twitter_app):
     with pytest.raises(Exception):
         twitter_app.single_tweet('Lorem ipsum'*35)
-    assert twitter_app.tweets == []
+    assert twitter_app.tweets_messages == []
 
 
 def test_tweet_with_hashtag(twitter_app):
@@ -42,4 +42,4 @@ def test_initialize_twitter_classes(backend_file):
     value1.single_tweet('Test 1')
     value1.single_tweet('Test 2')
 
-    assert value2.tweets == ['Test 1', 'Test 2']
+    assert value2.tweets_messages == ['Test 1', 'Test 2']
