@@ -1,6 +1,7 @@
 from unittest.mock import patch, Mock, MagicMock
 
 import pytest
+import requests
 
 from twitter_core import Twitter
 
@@ -78,4 +79,18 @@ def test_version_app(twitter_app):
     twitter_app.ver = MagicMock()
     twitter_app.ver.__eq__.return_value = '1.0'
     assert twitter_app.ver == '1.0'
+
+
+@patch.object(requests, 'get', return_value=ResponseGetMock())
+def test_all_hashtags(avatar_mock, twitter_app):
+    twitter_app.single_tweet('Test #alfa')
+    twitter_app.single_tweet('Test #lorem #ipsum')
+    twitter_app.single_tweet('Test #omega')
+    assert twitter_app.get_all_hashtags() == {'alfa', 'lorem', 'ipsum', 'omega'}
+
+
+@patch.object(requests, 'get', return_value=ResponseGetMock())
+def test_all_hashtags_not_found(avatar_mock, twitter_app):
+    twitter_app.single_tweet('Test alfa')
+    assert twitter_app.get_all_hashtags() == "Hashtags not found"
 

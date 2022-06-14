@@ -51,3 +51,11 @@ class Twitter(object):
         url = urljoin(API_USERS, self.username)
         response = requests.get(url)
         return response.json()['avatar_url']
+
+    def get_all_hashtags(self):
+        hashtags = []
+        for message in self.tweets:
+            hashtags.extend(message['hashtags'])
+        if hashtags:
+            return set(hashtags)
+        return "Hashtags not found"

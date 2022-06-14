@@ -2,4 +2,6 @@ venv/
 .idea/
 .idea/*.xml
 *.pyc
+.coverage
+twitter_core.py,cover
 tests_file.txt
